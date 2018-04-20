@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import Button from '../../components/Button';
+import LocalStore from '../../utils/Storage'; 
 
 function getMoviesFromApiAsync() {
   return new Promise((resolve) => {
@@ -39,12 +40,6 @@ export default class OnShowMovies extends Component {
       movies: []
     };
     this._getMoviesFromApiAsync();
-
-    fetch('https://movie.douban.com/j/search_subjects?type=movie&tag=%E8%B1%86%E7%93%A3%E9%AB%98%E5%88%86&sort=recommend&page_limit=20&page_start=0')
-    .then(response => response.json())
-    .then(resJson => {
-      console.log(resJson);
-    })
   }
 
   async _getMoviesFromApiAsync() {
@@ -58,21 +53,22 @@ export default class OnShowMovies extends Component {
     }
   }
 
-  renderItem(item) {
+  _onPressItem = (item) => {
     const { navigate } = this.props.navigation;
+    navigate(
+      'Profile', 
+        { 
+            name: item.title,
+            content: item.alt,
+        }
+    );
+  }
+
+  _renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => {
-            navigate(
-                'Profile', 
-                { 
-                    name: item.title,
-                    content: item.alt,
-                }
-            );
-        }}
+        onPress={this._onPressItem.bind(this, item)}
         activeOpacity={0.8}
-        key={item.id}
         style={{flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ececec'}}>
           <Image 
             resizeMode={'contain'}
@@ -94,12 +90,16 @@ export default class OnShowMovies extends Component {
     )
   }
 
+  _keyExtractor = (item, id) => id;
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <FlatList 
+          initialNumToRender={10}
           data={this.state.movies}
-          renderItem={({item}) => this.renderItem(item)}
+          renderItem={this._renderItem}
+          keyExtractor={this._keyExtractor}
         />
       </SafeAreaView>
     );

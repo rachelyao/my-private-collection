@@ -35,15 +35,18 @@ const tabStack = TabNavigator(
         }
     },
     {
-      initialRouteName: 'Right',
+      initialRouteName: 'Left',
       tabBarOptions: {
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
         labelStyle: {
           fontSize: 13,
+          top: -10
         },
         style: {
-          height: 36
+          height: 43,
+          justifyContent: 'center',
+          alignItems: 'center'
         }
       },
     }

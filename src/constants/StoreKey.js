@@ -1,0 +1,1 @@
+export const SEEN_MOVIES = 'SEEN_MOVIES';   //已看过的电影
