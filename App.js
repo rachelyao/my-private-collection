@@ -5,88 +5,29 @@
  */
 
 import React, { Component } from 'react';
-import { 
-  FlatList, StyleSheet, Text,
-  View, SectionList, Image, PixelRatio,
-  TouchableOpacity, ActivityIndicator,
-  AsyncStorage,
-  StatusBar, Platform,
-} from 'react-native';
-import {
-  StackNavigator, TabNavigator, DrawerNavigator, SwitchNavigator,
-} from 'react-navigation';
+import RootStack from './src/Root';
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { Provider } from 'react-redux'
+import rootReducer from './src/reducers/root.reducer'
 
-import OnShowMovies from './src/pages/onShowMovies/index';
-import Profile from './src/pages/movieDetail/index';
-import MovieExplore from './src/pages/movieExplore/index';
+import {createLogger} from 'redux-logger';
 
-import Button from './src/components/Button';
+const middlewares = [thunk];
 
-console.disableYellowBox = true;
-console.warn('YellowBox is disabled.');
+const logger = createLogger()
+middlewares.push(logger)
 
-const tabStack = TabNavigator(
-    {
-        Left: {
-            screen: OnShowMovies
-        },
-        Right: {
-            screen: MovieExplore
-        }
-    },
-    {
-      initialRouteName: 'Left',
-      tabBarOptions: {
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray',
-        labelStyle: {
-          fontSize: 13,
-          top: -10
-        },
-        style: {
-          height: 43,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }
-      },
-    }
-)
+const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore)
 
-const RootStack = StackNavigator(
-  {
-    Main: {
-      screen: tabStack,
-    },
-    Profile: {
-      screen: Profile
-    },
-  },
-  {
-    initialRouteName: 'Main',
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: 'cornflowerblue',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }
-  }
-);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const store = createStoreWithMiddleware(rootReducer)
 
 export default class App extends Component {  
   render() {  
     return (  
-      <RootStack />  
+      <Provider store={store}>
+          <RootStack />  
+      </Provider>
     );  
   }  
 }
